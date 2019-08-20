@@ -2,12 +2,20 @@
 
 const express = require('express');
 //const line = require('@line/bot-sdk');
-const bodyParser = require('body-parser')
-const request = require('request')
+const bodyParser = require('body-parser');
+const request = require('request');
+
+const { botTalking } = require('./botTalking');
 
 // ENV
 const PORT = process.env.PORT || 9090;
 //console.log(PORT);
+
+// Header
+let headers = {
+	'Content-Type': 'application/json',
+	'Authorization': 'Bearer {' + accessToken + '}'
+}
 
 //console.log(process.env.PROJECT_NAME);
 const accessToken = "YtD6c7bQAWqGS2a6p4oB/7FkLcVGmdja3PBqvtotg4AJJcchR8PGzdNGDpJ795PEtb4ukM9iVf+pBB7YThdYAlKvs1GKdfdGm7ICGmaw2/SaxqbB2oRXwtkjYULVtBAcHLFi4nL+rvYHFqtnCNqZCgdB04t89/1O/w1cDnyilFU=";
@@ -26,7 +34,7 @@ app.use(bodyParser.json());
 
 
 app.get("/", (req, res) => {
-	res.send('This is home webhok...!!!');
+	res.send('This is home webhook...!!!');
 });
 
 app.get("/test", (req, res) => {
@@ -40,8 +48,11 @@ app.get("/test", (req, res) => {
 
 
 app.post("/notify", (req, res) => {
+	// bot notify when push messages
 	const msg = req.body.messages;
-	reply(msg);
+	const id = req.body.id;
+	
+	pushText(id, msg);
 });
 
 app.post("/webhook", (req, res) => {
@@ -50,28 +61,55 @@ app.post("/webhook", (req, res) => {
 	
 	if (req.body.events != undefined) {
 		console.log('send from line');
+		console.log(req.body.events);
 		let replyToken = req.body.events[0].replyToken;
-		let message = req.body.events[0].message.text;
-	
-		if (message == 'hello') {
+		
+		// const event = req.body.events
+		// TODO: line event type
+		// handleEvent();
+		// TODO: bot answer here if event.type.message == text
+		const msgText = req.body.events[0].message.text;
+		let msgReply = botTalking(msgText);
+		
+		/* if (message == 'hello') {
 			let msg = "Hi!";
 			reply(replyToken, msg);
 		};
 		
 		if (message === 'order') {
 			let msg = "ยังไม่ทำอ่ะ...";
-			reply(replyToken, msg);
-		}
+			replyText(replyToken, msg);
+		} */
+		
+		replyText(replyToken, msgReply);
 	}
 	//res.send("webhook?");
 	res.sendStatus(200);
 });
 
-function reply(replyToken, message) {
-	let headers = {
-		'Content-Type': 'application/json',
-		'Authorization': 'Bearer {' + accessToken + '}'
-	}
+function pushText(id, message) {
+	let body = {
+		id: id,
+		messages: [
+			{
+				type: 'text',
+				text: message
+			}
+		]
+	};
+	
+	let bodyJson = JSON.stringify(body);
+	request.post({
+		url: 'https://api.line.me/v2/bot/message/push',
+		headers: headers,
+		body: bodyJson
+	}, (err, res, body) => {
+		console.log('push status = ' + res.statusCode);
+	});
+}
+
+function replyText(replyToken, message) {
+	
 	let body = {
 		replyToken: replyToken,
 		messages: [
@@ -89,7 +127,7 @@ function reply(replyToken, message) {
 		headers: headers,
 		body: bodyJson
 	}, (err, res, body) => {
-		console.log('status = ' + res.statusCode);
+		console.log('reply status = ' + res.statusCode);
 	});
 }
 
