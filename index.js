@@ -21,7 +21,7 @@ app.get("/test", (req, res) => {
 });
 
 
-app.get("webhook", (req, res) => {
+app.get("/webhook", (req, res) => {
 	console.log('This  is webhook.');
 	res.send("webhook?");
 });
