@@ -4,7 +4,7 @@ const botTalking = (messages) => {
 	//return "message form botTalking." + messages;
 	let msg = '';
 	if (messages == 'hello') {
-		msg = "Hi!";
+		msg = "Hi, How are you!";
 	};
 		
 	if (messages === 'order') {

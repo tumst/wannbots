@@ -5,17 +5,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
 
+require('dotenv').config();
+
 const { botTalking } = require('./botTalking');
 
 // ENV
 const PORT = process.env.PORT || 9090;
+const NODE_ENV = process.env.NODE_ENV;
+console.log('node env: ' + NODE_ENV);
 //console.log(PORT);
-
-// Header
-let headers = {
-	'Content-Type': 'application/json',
-	'Authorization': 'Bearer {' + accessToken + '}'
-}
 
 //console.log(process.env.PROJECT_NAME);
 const accessToken = "YtD6c7bQAWqGS2a6p4oB/7FkLcVGmdja3PBqvtotg4AJJcchR8PGzdNGDpJ795PEtb4ukM9iVf+pBB7YThdYAlKvs1GKdfdGm7ICGmaw2/SaxqbB2oRXwtkjYULVtBAcHLFi4nL+rvYHFqtnCNqZCgdB04t89/1O/w1cDnyilFU=";
@@ -24,14 +22,45 @@ const lineConfig = {
 	"channelAccessToken": accessToken,
 	"channelSecret": channelSecret
 };
+
+// Header
+let headers = {
+	'Content-Type': 'application/json',
+	'Authorization': 'Bearer {' + accessToken + '}'
+}
+
 // create line sdk client
 //const lineClient = new line.Client(lineConfig);
-
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+function handleEvent(event) {
+	switch (event.type) {
+		case 'postback':
+			
+			break;
+		case 'message':
+		case 'text':
+			const replyToken = event.replyToken;
+			const msgText = event.message.text;
+			const msgReply = botTalking(msgText);
+			
+			let messages = [
+				{
+					type: 'text',
+					text: msgReply
+				}
+			]
+			// sent function to bot
+			replyText(replyToken, messages);
+			break;
+		default:
+			
+		
+	}
+}
 
 app.get("/", (req, res) => {
 	res.send('This is home webhook...!!!');
@@ -50,9 +79,10 @@ app.get("/test", (req, res) => {
 app.post("/notify", (req, res) => {
 	// bot notify when push messages
 	const msg = req.body.messages;
-	const id = req.body.id;
-	
-	pushText(id, msg);
+	const to_id = req.body.to;
+	// console.log('id: ' + id);
+	pushText(to_id, msg);
+	res.sendStatus(200);
 });
 
 app.post("/webhook", (req, res) => {
@@ -61,74 +91,67 @@ app.post("/webhook", (req, res) => {
 	
 	if (req.body.events != undefined) {
 		console.log('send from line');
-		console.log(req.body.events);
-		let replyToken = req.body.events[0].replyToken;
+		console.log(JSON.stringify(req.body));
 		
-		// const event = req.body.events
-		// TODO: line event type
-		// handleEvent();
-		// TODO: bot answer here if event.type.message == text
-		const msgText = req.body.events[0].message.text;
-		let msgReply = botTalking(msgText);
-		
-		/* if (message == 'hello') {
-			let msg = "Hi!";
-			reply(replyToken, msg);
-		};
-		
-		if (message === 'order') {
-			let msg = "ยังไม่ทำอ่ะ...";
-			replyText(replyToken, msg);
-		} */
-		
-		replyText(replyToken, msgReply);
+		// Promise.all
+		Promise
+			.all(req.body.events.map(handleEvent))
+			.then((result) => res.json(result));
+			
 	}
 	//res.send("webhook?");
 	res.sendStatus(200);
 });
 
 function pushText(id, message) {
+	console.log('pushText');
+	console.log(NODE_ENV);
 	let body = {
-		id: id,
-		messages: [
-			{
-				type: 'text',
-				text: message
-			}
-		]
+		to: id,
+		messages: message
 	};
 	
 	let bodyJson = JSON.stringify(body);
-	request.post({
-		url: 'https://api.line.me/v2/bot/message/push',
-		headers: headers,
-		body: bodyJson
-	}, (err, res, body) => {
-		console.log('push status = ' + res.statusCode);
-	});
+	console.log(bodyJson);
+	
+	if (NODE_ENV === 'virtualline') {
+		request.post({
+			url: 'https://api.line.me/v2/bot/message/push',
+			headers: headers,
+			body: bodyJson
+		}, (err, res, body) => {
+			console.log('push status = ' + res.statusCode);
+		});
+		console.log('== virtualline');
+	} else {
+		console.log('do not push.');
+		console.log(bodyJson);
+	}
 }
 
 function replyText(replyToken, message) {
-	
+	console.log('replyText');
+	console.log(NODE_ENV);
 	let body = {
 		replyToken: replyToken,
-		messages: [
-			{
-				type: 'text',
-				text: message
-			}
-		]
+		messages: message
 	};
 	
 	let bodyJson = JSON.stringify(body);
+	console.log(bodyJson);
 	
-	request.post({
-		url: 'https://api.line.me/v2/bot/message/reply',
-		headers: headers,
-		body: bodyJson
-	}, (err, res, body) => {
-		console.log('reply status = ' + res.statusCode);
-	});
+	if (NODE_ENV != 'virtualline') {
+		request.post({
+			url: 'https://api.line.me/v2/bot/message/reply',
+			headers: headers,
+			body: bodyJson
+		}, (err, res, body) => {
+			console.log('reply status = ' + res.statusCode);
+		});
+		console.log('!= virtualline');
+	} else {
+		console.log('do not reply');
+	}
 }
 
 app.listen(PORT, () => {
