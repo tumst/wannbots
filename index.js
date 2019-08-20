@@ -34,21 +34,37 @@ app.get("/test", (req, res) => {
 		status: true,
 		data: {text: "hello"}
 	};
-	
+	console.log(responseObj);
 	res.json(responseObj);
 });
 
 
-app.get("/webhook", (req, res) => {
-	console.log('This  is webhook.');
-	let replyToken = req.body.events[0].replyToken;
-	let message = req.body.events[0].message.text;
+app.post("/notify", (req, res) => {
+	const msg = req.body.messages;
+	reply(msg);
+});
+
+app.post("/webhook", (req, res) => {
+	//console.log('This  is webhook.');
+	//console.log(req.body.events);
 	
-	if (message == 'hello') {
-		msg = "Hi!";
-		reply(replyToken, msg);
-	};
-	res.send("webhook?");
+	if (req.body.events != undefined) {
+		console.log('send from line');
+		let replyToken = req.body.events[0].replyToken;
+		let message = req.body.events[0].message.text;
+	
+		if (message == 'hello') {
+			let msg = "Hi!";
+			reply(replyToken, msg);
+		};
+		
+		if (message === 'order') {
+			let msg = "ยังไม่ทำอ่ะ...";
+			reply(replyToken, msg);
+		}
+	}
+	//res.send("webhook?");
+	res.sendStatus(200);
 });
 
 function reply(replyToken, message) {
@@ -69,7 +85,7 @@ function reply(replyToken, message) {
 	let bodyJson = JSON.stringify(body);
 	
 	request.post({
-		url: 'http://api.line.me/v2/bot/message/reply',
+		url: 'https://api.line.me/v2/bot/message/reply',
 		headers: headers,
 		body: bodyJson
 	}, (err, res, body) => {
