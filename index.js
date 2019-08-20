@@ -21,6 +21,13 @@ app.get("/test", (req, res) => {
 });
 
 
+app.get("webhook", (req, res) => {
+	console.log('This  is webhook.');
+	res.send("webhook?");
+});
+
+
+
 
 app.listen(PORT, () => {
 	console.log('application is listen on: ', PORT);
