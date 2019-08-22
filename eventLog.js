@@ -2,7 +2,7 @@
 
 const request = require('request')
 
-url_wann = 'http://wanncosmetics.ddns.net:9051'
+const url_wann = 'http://wanncosmetics.ddns.net:9051'
 
 const headers = {
   'Content-Type': 'application/json'
@@ -16,7 +16,7 @@ const eventLoggingPostToWann = lineBody => {
       body: lineBody
     },
     (err, res, body) => {
-      console.log('push status = ' + res.statusCode)
+      console.log('log status = ' + res.statusCode)
     }
   )
 }
