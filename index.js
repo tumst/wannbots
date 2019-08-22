@@ -67,9 +67,11 @@ app.post('/webhook', (req, res) => {
       //res.json(result)
       console.log('Promise.all res')
       console.log(result)
+      console.log('*********** end reply webhook ************')
     })
   }
   //res.send("webhook?");
+
   res.sendStatus(200)
 })
 

@@ -17,7 +17,7 @@ const confirmRawmatNextReceived = (title, dataString) => {
         {
           type: 'postback',
           label: 'No',
-          data: 'action=no&itemid=0L-1-0001'
+          data: 'action=yes&itemId=0L-1-0001&receivedId=R1590/15'
         }
       ]
     }

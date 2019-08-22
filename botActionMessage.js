@@ -27,7 +27,7 @@ const pushText = (id, message) => {
   let bodyJson = JSON.stringify(body)
   console.log(bodyJson)
 
-  if (NODE_ENV === 'virtualline') {
+  if (NODE_ENV === 'production') {
     request.post(
       {
         url: 'https://api.line.me/v2/bot/message/push',
@@ -38,7 +38,7 @@ const pushText = (id, message) => {
         console.log('push status = ' + res.statusCode)
       }
     )
-    console.log('== virtualline')
+    console.log('== production')
   } else {
     console.log('do not push.')
     console.log(bodyJson)
@@ -58,7 +58,7 @@ const replyText = (replyToken, message) => {
   let bodyJson = JSON.stringify(body)
   console.log(bodyJson)
 
-  if (NODE_ENV === 'virtualline') {
+  if (NODE_ENV === 'production') {
     request.post(
       {
         url: 'https://api.line.me/v2/bot/message/reply',
@@ -70,7 +70,7 @@ const replyText = (replyToken, message) => {
         return res.statusCode
       }
     )
-    console.log('!= virtualline')
+    console.log('== production')
   } else {
     console.log('do not reply')
     return false
