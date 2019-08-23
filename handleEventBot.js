@@ -26,8 +26,11 @@ const handleEvent = event => {
       const postbackObj = queryStringParser(event.postback.data)
       const msgAction = postbackObj.action
 
-      messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
+      // TODO: send message if action = yes to RabbitMQ on wann server
+      // ***
 
+      // messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
+      messages = [{ type: 'text', text: 'ฉลากถูกปริ้นท์เรียบร้อย...' }]
       // sent reply message to bot
       return replyText(replyToken, messages)
       break
@@ -46,7 +49,13 @@ const handleEvent = event => {
         }
       ]
       // sent reply message to bot
-      return replyText(replyToken, messages)
+      if (msgReply != '') {
+        return replyText(replyToken, messages)
+      } else {
+        console.log('This message do not reply.')
+        return Promise.resolve(null)
+      }
+
       break
 
     default:
