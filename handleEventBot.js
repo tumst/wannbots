@@ -41,11 +41,11 @@ const handleEvent = event => {
               }
             ]
             rabbitWoker(actionName, msgAction)
-            replyText(replyToken, 'yes')
+            replyText(replyToken, messages)
             return 'yes'
           } else if (msgAction === 'no') {
             console.log('Confirm template : no')
-            return replyText(replyToken, 'no')
+            // return replyText(replyToken, 'no')
             return 'no'
           }
           break
