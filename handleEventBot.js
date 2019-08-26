@@ -3,6 +3,7 @@
 const { replyText } = require('./botActionMessage')
 const { botTalking } = require('./botTalking')
 const { queryStringParser } = require('./utils')
+const { rabbitWoker } = require('./rabbitMQ')
 
 const handleEvent = event => {
   console.log('this is handle event')
@@ -24,15 +25,33 @@ const handleEvent = event => {
 	    */
       replyToken = event.replyToken
       const postbackObj = queryStringParser(event.postback.data)
+      const actionName = postbackObj.actionName
       const msgAction = postbackObj.action
 
-      // TODO: send message if action = yes to RabbitMQ on wann server
-      // ***
-
-      // messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
-      messages = [{ type: 'text', text: 'ฉลากถูกปริ้นท์เรียบร้อย...' }]
-      // sent reply message to bot
-      return replyText(replyToken, messages)
+      switch (actionName) {
+        case 'rawmat_receive_isempty':
+          // TODO: send message if action = yes to RabbitMQ on wann server
+          if (msgAction === 'yes') {
+            console.log('Confirm template : yes')
+            // messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
+            messages = [
+              {
+                type: 'text',
+                text: 'ฉลากถูกปริ้นท์เรียบร้อย...'
+              }
+            ]
+            rabbitWoker(actionName, msgAction)
+            replyText(replyToken, 'yes')
+            return 'yes'
+          } else if (msgAction === 'no') {
+            console.log('Confirm template : no')
+            return replyText(replyToken, 'no')
+            return 'no'
+          }
+          break
+        default:
+          console.log('actionName : default...')
+      }
       break
 
     case 'message':
