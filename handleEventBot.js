@@ -10,6 +10,7 @@ const handleEvent = event => {
   let replyToken = ''
   let messages = ''
 
+  currentTime = new Date().getTime()
   switch (event.type) {
     case 'postback':
       /* data from : events.type == postback
@@ -24,33 +25,48 @@ const handleEvent = event => {
 			}
 	    */
       replyToken = event.replyToken
-      const postbackObj = queryStringParser(event.postback.data)
-      const actionName = postbackObj.actionName
-      const msgAction = postbackObj.action
+      // replyTime = event.timestamp
+      // diffTime = currentTime - replyTime
+      replyDateTime = new Date(event.timestamp)
+      rDate = replyDateTime.getDate()
+      rMonth = replyDateTime.getMonth() + 1
+      rYear = replyDateTime.getFullYear()
 
-      switch (actionName) {
-        case 'rawmat_receive_isempty':
-          // TODO: send message if action = yes to RabbitMQ on wann server
-          if (msgAction === 'yes') {
-            console.log('Confirm template : yes')
-            // messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
-            messages = [
-              {
-                type: 'text',
-                text: 'ฉลากถูกปริ้นท์เรียบร้อย...'
-              }
-            ]
-            rabbitWoker(actionName, msgAction)
-            replyText(replyToken, messages)
-            return 'yes'
-          } else if (msgAction === 'no') {
-            console.log('Confirm template : no')
-            // return replyText(replyToken, 'no')
-            return 'no'
-          }
-          break
-        default:
-          console.log('actionName : default...')
+      const postbackObj = queryStringParser(event.postback.data)
+      const queueName = postbackObj.queueName
+      const msgAction = postbackObj.action
+      const pushTimestamp = postbackObj.timestamp
+      const pushDateTime = new Date(pushTimestamp)
+      pDate = pushDateTime.getDate()
+      pMonth = pushDateTime.getMonth()
+      pYear = pushDateTime.getFullYear()
+
+      if (rDate === pDate && rMonth === pMonth && rYear === pYear) {
+        switch (queueName) {
+          case 'rawmat_receive_isempty':
+            // TODO: send message if action = yes to RabbitMQ on wann server
+            if (msgAction === 'yes') {
+              console.log('Confirm template : yes')
+              // messages = [{ type: 'text', text: 'action:' + msgAction + ' is successful.' }]
+              messages = [
+                {
+                  type: 'text',
+                  text: 'ฉลากถูกปริ้นท์เรียบร้อย....'
+                }
+              ]
+              rabbitWoker(queueName, postbackObj)
+              replyText(replyToken, messages)
+              return 'yes'
+            } else if (msgAction === 'no') {
+              console.log('Confirm template : no')
+              rabbitWoker(queueName, postbackObj)
+              // return replyText(replyToken, 'no')
+              return 'no'
+            }
+            break
+          default:
+            console.log('queueName : default...')
+        }
       }
       break
 
