@@ -3,16 +3,17 @@
 const { replyText } = require('./botActionMessage')
 const { botTalking } = require('./botTalking')
 const { queryStringParser } = require('./utils')
-const { rabbitWoker } = require('./rabbitMQ')
+const { rabbitWorker } = require('./rabbitMQ')
 
 const handleEvent = event => {
   console.log('this is handle event')
   let replyToken = ''
   let messages = ''
 
-  currentTime = new Date().getTime()
+  const currentTime = new Date().getTime()
   switch (event.type) {
     case 'postback':
+      console.log('postback')
       /* data from : events.type == postback
 			{
 				"events":[{
@@ -27,22 +28,28 @@ const handleEvent = event => {
       replyToken = event.replyToken
       // replyTime = event.timestamp
       // diffTime = currentTime - replyTime
-      replyDateTime = new Date(event.timestamp)
-      rDate = replyDateTime.getDate()
-      rMonth = replyDateTime.getMonth() + 1
-      rYear = replyDateTime.getFullYear()
+      const replyDateTime = new Date(event.timestamp)
+      const rDate = replyDateTime.getDate()
+      const rMonth = replyDateTime.getMonth() + 1
+      const rYear = replyDateTime.getFullYear()
 
       const postbackObj = queryStringParser(event.postback.data)
       const queueName = postbackObj.queueName
       const msgAction = postbackObj.action
       const pushTimestamp = postbackObj.timestamp
-      const pushDateTime = new Date(pushTimestamp)
-      pDate = pushDateTime.getDate()
-      pMonth = pushDateTime.getMonth()
-      pYear = pushDateTime.getFullYear()
-
+      console.log(pushTimestamp)
+      const pushDateTime = new Date(parseInt(pushTimestamp))
+      console.log(pushDateTime)
+      const pDate = pushDateTime.getDate()
+      const pMonth = pushDateTime.getMonth() + 1
+      const pYear = pushDateTime.getFullYear()
+      console.log('check datetime')
+      console.log(postbackObj)
+      console.log(rDate + '  ' + rMonth + '  ' + rYear)
+      console.log(pDate + '  ' + pMonth + '  ' + pYear)
       if (rDate === pDate && rMonth === pMonth && rYear === pYear) {
-        switch (queueName) {
+        const subQueueName = queueName.substring(0, 22)
+        switch (subQueueName) {
           case 'rawmat_receive_isempty':
             // TODO: send message if action = yes to RabbitMQ on wann server
             if (msgAction === 'yes') {
@@ -54,12 +61,14 @@ const handleEvent = event => {
                   text: 'ฉลากถูกปริ้นท์เรียบร้อย....'
                 }
               ]
-              rabbitWoker(queueName, postbackObj)
+              //rabbitWorker(queueName, postbackObj)
+              rabbitWorker(queueName, event.postback.data)
               replyText(replyToken, messages)
               return 'yes'
             } else if (msgAction === 'no') {
               console.log('Confirm template : no')
-              rabbitWoker(queueName, postbackObj)
+              //rabbitWorker(queueName, postbackObj)
+              rabbitWorker(queueName, event.postback.data)
               // return replyText(replyToken, 'no')
               return 'no'
             }
@@ -67,6 +76,8 @@ const handleEvent = event => {
           default:
             console.log('queueName : default...')
         }
+      } else {
+        console.log('date not match.')
       }
       break
 
