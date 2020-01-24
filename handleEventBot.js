@@ -34,6 +34,7 @@ const handleEvent = event => {
       const rYear = replyDateTime.getFullYear()
 
       const postbackObj = queryStringParser(event.postback.data)
+      const topicname = postbackObj.topicname
       const queueName = postbackObj.queueName
       const msgAction = postbackObj.action
       const pushTimestamp = postbackObj.timestamp
@@ -70,6 +71,26 @@ const handleEvent = event => {
               //rabbitWorker(queueName, postbackObj)
               rabbitWorker(queueName, event.postback.data)
               // return replyText(replyToken, 'no')
+              return 'no'
+            }
+            break
+          case 'approve_rawmat_picking':
+            if (msgAction === 'yes') {
+              // action=yes&RawPK=188328&isauthen=1&timestamp=1579577950588&queueName=approve_rawmat_picking
+              console.log('Confirm template approve: yes')
+              messages = [
+                {
+                  type: 'text',
+                  text: 'อนุมัติเรียบร้อย.....'
+                }
+              ]
+              rabbitWorker(queueName, event.postback.data)
+              replyText(replyToken, messages)
+              return 'yes'
+            } else if (msgAction === 'no') {
+              // action=no&RawPK=188328&isauthen=1&timestamp=1579577950588&queueName=approve_rawmat_picking
+              console.log('Confirm template approve: no')
+              rabbitWorker(queueName, event.postback.data)
               return 'no'
             }
             break
