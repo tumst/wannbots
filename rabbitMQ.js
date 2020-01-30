@@ -13,8 +13,9 @@ const rabbitWorker = (queueName, messages) => {
       console.log(error0)
       throw error0
     }
-    console.log('create channel')
+    console.log('creating channel')
     connection.createChannel(function(error1, channel) {
+      console.log('created channel')
       if (error1) {
         console.log(error1)
         throw error1

@@ -9,6 +9,7 @@ require('dotenv').config()
 // custom library
 const { handleEvent } = require('./handleEventBot')
 const { pushText } = require('./botActionMessage')
+const { rabbitWorker } = require('./rabbitMQ')
 
 // ENV
 const PORT = process.env.PORT || 9090
@@ -43,6 +44,15 @@ app.get('/test', (req, res) => {
   }
   console.log(responseObj)
   res.json(responseObj)
+})
+
+app.get('/taskqueue', (req, res) => {
+  // taskqueue?msg=xdfjdksalfdkfa
+  console.log('task queue...')
+  // console.log(JSON.stringify(req.body))
+  const msg = req.query.msg
+  const queueName = "test_taskqueue"
+  rabbitWorker(queueName, msg)
 })
 
 app.post('/notify', (req, res) => {
