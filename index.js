@@ -11,6 +11,9 @@ const { handleEvent } = require('./handleEventBot')
 const { pushText } = require('./botActionMessage')
 const { rabbitWorker } = require('./rabbitMQ')
 
+// http
+const http = require('http')
+
 // ENV
 const PORT = process.env.PORT || 9090
 
@@ -44,6 +47,30 @@ app.get('/test', (req, res) => {
   }
   console.log(responseObj)
   res.json(responseObj)
+})
+
+app.get('/test/api', (req, res) => {
+  const url = "http://wanncosmetics.ddns.net:65001/test"
+
+  http.get(url, (resp) => {
+    console.log('http get')
+    let data = '';
+    
+    // A chunk of data has been recieved.
+    resp.on('data', (chunk) => {
+      // console.log('on data chunk...')
+      data += chunk;
+    });
+    
+    // The whole response has been received. Print out the result.
+    resp.on('end', () => {
+      console.log('on end ')
+      console.log(JSON.parse(data));
+    });
+    
+  }).on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
 })
 
 app.get('/taskqueue', (req, res) => {
