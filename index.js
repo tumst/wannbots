@@ -49,8 +49,11 @@ app.get('/test', (req, res) => {
   res.json(responseObj)
 })
 
-app.get('/test/api', (req, res) => {
-  const url = "http://wanncosmetics.ddns.net:65001/test"
+app.get('/api/invoices', (req, res) => {
+  // const url = "http://wanncosmetics.ddns.net:65001/test"
+  const poId = req.query.poId;
+  // const url = "http://wanncosmetics.ddns.net:65003/invoices/?poId=VCL25-11-19%2F04"
+  const url = "http://wanncosmetics.ddns.net:65003/invoices/?poId="+poId
 
   http.get(url, (resp) => {
     console.log('http get')
@@ -66,6 +69,7 @@ app.get('/test/api', (req, res) => {
     resp.on('end', () => {
       console.log('on end ')
       console.log(JSON.parse(data));
+      res.json(JSON.parse(data))
     });
     
   }).on("error", (err) => {
