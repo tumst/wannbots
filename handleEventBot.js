@@ -3,7 +3,8 @@
 const { replyText } = require('./botActionMessage')
 const { botTalking } = require('./botTalking')
 const { queryStringParser } = require('./utils')
-const { rabbitWorker } = require('./rabbitMQ')
+// const { rabbitWorker } = require('./rabbitMQ')
+const { firebaser } = require('./firebaser')
 
 const handleEvent = event => {
   console.log('this is handle event')
@@ -62,14 +63,20 @@ const handleEvent = event => {
                   text: 'ฉลากถูกปริ้นท์เรียบร้อย....'
                 }
               ]
-              //rabbitWorker(queueName, postbackObj)
-              rabbitWorker(queueName, event.postback.data)
+              // rabbitWorker(queueName, postbackObj)
+              // rabbitWorker(queueName, event.postback.data)
+
+              // change rabbitmq to firebase
+              firebaser(queueName, event.postback.data)
               replyText(replyToken, messages)
               return 'yes'
             } else if (msgAction === 'no') {
               console.log('Confirm template : no')
               //rabbitWorker(queueName, postbackObj)
-              rabbitWorker(queueName, event.postback.data)
+              // rabbitWorker(queueName, event.postback.data)
+
+              // change rabbitmq to firebase
+              firebaser(queueName, event.postback.data)
               // return replyText(replyToken, 'no')
               return 'no'
             }
@@ -84,13 +91,20 @@ const handleEvent = event => {
                   text: 'อนุมัติเรียบร้อย.....'
                 }
               ]
-              rabbitWorker(queueName, event.postback.data)
+              // rabbitWorker(queueName, event.postback.data)
+
+              // change rabbitmq to firebase
+              firebaser(queueName, event.postback.data)
+
               replyText(replyToken, messages)
               return 'yes'
             } else if (msgAction === 'no') {
               // action=no&RawPK=188328&isauthen=1&timestamp=1579577950588&queueName=approve_rawmat_picking
               console.log('Confirm template approve: no')
-              rabbitWorker(queueName, event.postback.data)
+              // rabbitWorker(queueName, event.postback.data)
+
+              // change rabbitmq to firebase
+              firebaser(queueName, event.postback.data)
               return 'no'
             }
             break
