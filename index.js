@@ -9,7 +9,7 @@ require('dotenv').config()
 // custom library
 const { handleEvent } = require('./handleEventBot')
 const { pushText } = require('./botActionMessage')
-const { rabbitWorker } = require('./rabbitMQ')
+// const { rabbitWorker } = require('./rabbitMQ')
 
 // http
 // const http = require('http')
