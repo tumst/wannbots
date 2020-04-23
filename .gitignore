@@ -1,5 +1,5 @@
 # Node build artifacts
-node_modules
+node_modules/
 npm-debug.log
 
 # Local development
@@ -13,3 +13,8 @@ docker-compose.yml
 
 # custom
 event.md
+
+# firebase
+firebasekeys/
+
+# firebaser.js
