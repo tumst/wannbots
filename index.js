@@ -88,6 +88,8 @@ app.get('/test', (req, res) => {
 
 app.post('/notify', (req, res) => {
   // bot notify when push messages
+  console.log('---------------')
+  console.log(req.body)
   const msg = req.body.messages
   const to_id = req.body.to
   // console.log('id: ' + id);
