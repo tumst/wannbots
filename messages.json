@@ -1,0 +1,25 @@
+{
+    "to": "Ubc443e4bf8f5e0bb76430e1b75110171",
+    "messages": [
+        {
+            "type": "template",
+            "altText": "[ เบิกแก้งานผลิต ]\nรหัสเนื้อ: 04-000-016\nล็อต: 200007\nชื่อวัตถุดิบ: DI Water\nรหัสวัตถุดิบ: 0L-1-0000\nจำนวนที่เบิก: 1.45 kg.\nจำนวนที่ใช้ในสูตร: 7.6 kg.\nผู้เบิก: ยุวดี\nหมายเหตุ: -",
+            "template": {
+                "type": "confirm",
+                "text": "[ เบิกแก้งานผลิต ]\nรหัสเนื้อ: 04-000-016\nล็อต: 200007\nชื่อวัตถุดิบ: DI Water\nรหัสวัตถุดิบ: 0L-1-0000\nจำนวนที่เบิก: 1.45 kg.\nจำนวนที่ใช้ในสูตร: 7.6 kg.\nผู้เบิก: ยุวดี\nหมายเหตุ: -",
+                "actions": [
+                    {
+                        "type": "postback",
+                        "label": "อนุมัติ",
+                        "data": "action=yes&RawPK=225926&isauthen=1&timestamp=1597129901403&queueName=approve_rawmat_picking"
+                    },
+                    {
+                        "type": "postback",
+                        "label": "ไม่อนุมัติ",
+                        "data": "action=no&RawPK=225926&isauthen=0&timestamp=1597129901403&queueName=approve_rawmat_picking"
+                    }
+                ]
+            }
+        }
+    ]
+}
