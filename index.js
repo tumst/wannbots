@@ -4,7 +4,7 @@ const express = require('express')
 const line = require('@line/bot-sdk')
 const bodyParser = require('body-parser')
 
-require('dotenv').config()
+// require('dotenv').config()
 
 // custom library
 const { handleEvent } = require('./handleEventBot')
@@ -88,7 +88,8 @@ app.get('/test', (req, res) => {
 
 app.post('/notify', (req, res) => {
   // bot notify when push messages
-  console.log('---------------')
+  const now = new Date()
+  console.log(`\n--------------------- begin notify :: ${now.toISOString()} ------------------`)
   console.log(req.body)
   const msg = req.body.messages
   const to_id = req.body.to

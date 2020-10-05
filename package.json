@@ -4,7 +4,8 @@
   "description": "wann bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "startdotenv": "node -r dotenv/config index.js dotenv_config_path=.env"
   },
   "keywords": [
     "bot"
@@ -15,9 +16,11 @@
     "@line/bot-sdk": "^6.8.2",
     "amqplib": "^0.5.5",
     "body-parser": "^1.19.0",
-    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "firebase-admin": "^8.9.2",
     "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.1.0"
   }
 }

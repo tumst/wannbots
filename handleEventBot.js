@@ -35,7 +35,7 @@ const handleEvent = event => {
       const rYear = replyDateTime.getFullYear()
 
       const postbackObj = queryStringParser(event.postback.data)
-      const topicname = postbackObj.topicname
+      // const topicname = postbackObj.topicname
       const queueName = postbackObj.queueName
       const msgAction = postbackObj.action
       const pushTimestamp = postbackObj.timestamp
@@ -50,7 +50,7 @@ const handleEvent = event => {
       console.log(rDate + '  ' + rMonth + '  ' + rYear)
       console.log(pDate + '  ' + pMonth + '  ' + pYear)
       if (rDate === pDate && rMonth === pMonth && rYear === pYear) {
-        const subQueueName = queueName.substring(0, 22)
+        const subQueueName = queueName.substring(0, 50)
         switch (subQueueName) {
           case 'rawmat_receive_isempty':
             // TODO: send message if action = yes to RabbitMQ on wann server
@@ -81,7 +81,7 @@ const handleEvent = event => {
               return 'no'
             }
             break
-          case 'approve_rawmat_picking':
+          case 'approve_rawmat_picking' || 'approve_pkg_picking':
             if (msgAction === 'yes') {
               // action=yes&RawPK=188328&isauthen=1&timestamp=1579577950588&queueName=approve_rawmat_picking
               console.log('Confirm template approve: yes')
