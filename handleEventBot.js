@@ -81,7 +81,8 @@ const handleEvent = event => {
               return 'no'
             }
             break
-          case 'approve_rawmat_picking' || 'approve_pkg_picking':
+          case 'approve_pkg_picking':
+          case 'approve_rawmat_picking':
             if (msgAction === 'yes') {
               // action=yes&RawPK=188328&isauthen=1&timestamp=1579577950588&queueName=approve_rawmat_picking
               console.log('Confirm template approve: yes')
